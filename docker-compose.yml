@@ -1,0 +1,25 @@
+version: '2'
+services:
+  tutodocker-mysql:
+    image: tutodocker-mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment: 
+      - MYSQL_ROOT_PASSWORD=root
+  tutodocker-api:
+    image: tutoapi
+    ports:
+      - 3000:3000    
+    environment:
+      - MYSQL_HOST=docker_training_elc_tutodocker-mysql_1
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_DATABASE=workshop
+    # depends_on does not wait for db and redis to be “ready” before starting web - only until they have been started. 
+    # If you need to wait for a service to be ready, create a loop to wait your service is ready
+    depends_on: 
+     - tutodocker-mysql
+volumes:
+  mysql_data:

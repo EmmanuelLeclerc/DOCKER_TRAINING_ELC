@@ -34,7 +34,7 @@ var users;
 
 con.connect(function(err) {
   if (err) throw err;
-  con.query("SELECT * FROM USERS", function (err, result, fields) {
+  con.query("SELECT * FROM workshop.USERS", function (err, result, fields) {
     if (err) throw err;
     users = result;
     console.log(result);
