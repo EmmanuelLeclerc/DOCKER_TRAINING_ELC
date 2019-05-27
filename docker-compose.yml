@@ -13,7 +13,7 @@ services:
     ports:
       - 3000:3000    
     environment:
-      - MYSQL_HOST=docker_training_elc_tutodocker-mysql_1
+      - MYSQL_HOST=tutodocker-mysql
       - MYSQL_USER=root
       - MYSQL_PASSWORD=root
       - MYSQL_DATABASE=workshop

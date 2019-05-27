@@ -24,10 +24,14 @@ var mysql = require('mysql');
 
 // Create a mysql connection object
 var con = mysql.createConnection({
-  host: "mysql-container",
-  user: "root",
-  password: "root",
-  database: "workshop"
+//  host: "tutodocker-mysql",
+//  user: "root",
+//  password: "root",
+//  database: "workshop"
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE
 });
 
 var users;
