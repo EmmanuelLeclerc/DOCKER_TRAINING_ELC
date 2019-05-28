@@ -9,8 +9,7 @@ services:
 stages:
   - build
   - test
-  - push_tutobdd
-  - push_tutoapi
+  - push_tuto
   - deploy
 
 build:
@@ -21,14 +20,14 @@ build:
   script: 
     - node --check tutoapi/app.js
 
-test:
-  stage: test
-  script:
-    - echo "${JFROG_USER}"
-    - echo "${JFROG_REPO}"
+#test:
+#  stage: test
+#  script:
+#    - echo "${JFROG_USER}"
+#    - echo "${JFROG_REPO}"
 
 push_tutobdd:
-  stage: push_tutobdd
+  stage: push_tuto
   image: docker
   tags:
     - docker
@@ -39,7 +38,8 @@ push_tutobdd:
     - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOBDD}
 
 push_tutoapi:
-  stage: push_tutoapi
+  stage: push_tuto
+  image: docker
   tags:
     - docker
   script:
