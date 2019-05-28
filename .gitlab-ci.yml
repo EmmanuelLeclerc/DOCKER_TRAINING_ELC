@@ -1,11 +1,16 @@
 variables:
   JFROG_REPO: adeo-docker-adeo-davidson-dev.jfrog.io
   DOCKER_IMAGE_TUTOBDD: tutobdd-elc
+  DOCKER_IMAGE_TUTOAPI: tutoapi-elc
+
+services:
+  - docker:dind
 
 stages:
   - build
   - test
-  - push_tuto
+  - push_tutobdd
+  - push_tutoapi
   - deploy
 
 build:
@@ -22,8 +27,9 @@ test:
     - echo "${JFROG_USER}"
     - echo "${JFROG_REPO}"
 
-push_tuto:
-  stage: push_tuto
+push_tutobdd:
+  stage: push_tutobdd
+  image: docker
   tags:
     - docker
   script:
@@ -32,6 +38,15 @@ push_tuto:
     - docker tag tutobdd-elc ${DOCKER_IMAGE_TUTOBDD}
     - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOBDD}:lastest
 
+push_tutoapi:
+  stage: push_tutoapi
+  tags:
+    - docker
+  script:
+    - docker login -u ${JFROG_USER} -p ${JFROG_TOKEN} ${JFROG_REPO}
+    - cd bdd && docker build -t ${DOCKER_IMAGE_TUTOAPI} .
+    - docker tag tutobdd-elc ${DOCKER_IMAGE_TUTOAPI}
+    - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}:lastest
 
 deploy:
   stage: deploy
