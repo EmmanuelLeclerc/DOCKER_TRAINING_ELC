@@ -4,7 +4,8 @@ stages:
   - deploy
 
 build:
-  stage: build
+  stage: build
+  image: node:alpine
   script: 
     - node -- check app.js
 
@@ -12,8 +13,9 @@ test:
   stage: test 
   script:
     - echo "test test"
+
 deploy:
-  stage: deploy
+  stage: deploy
   script:
     - echo "test deploy" 
 
