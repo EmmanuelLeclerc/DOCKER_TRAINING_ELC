@@ -6,6 +6,8 @@ stages:
 build:
   stage: build
   image: node:alpine
+  tags:
+    - docker
   script: 
     - node -- check app.js
 
