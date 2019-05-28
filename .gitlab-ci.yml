@@ -10,12 +10,12 @@ build:
     - node -- check app.js
 
 test:
-  stage: test 
+  stage: test
   script:
-    - echo "test test"
+    - echo "test test"
 
 deploy:
   stage: deploy
   script:
-    - echo "test deploy" 
+    - echo "test deploy" 
 
