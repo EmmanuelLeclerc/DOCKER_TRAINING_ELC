@@ -9,7 +9,7 @@ build:
   tags:
     - docker
   script: 
-    - node --check app.js
+    - node --check tutoapi/app.js
 
 test:
   stage: test
