@@ -45,7 +45,7 @@ push_tutoapi:
   script:
     - docker login -u ${JFROG_USER} -p ${JFROG_TOKEN} ${JFROG_REPO}
     - cd bdd && docker build -t ${DOCKER_IMAGE_TUTOAPI} .
-    - docker tag tutobdd-elc ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}
+    - docker tag tutoapi-elc ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}
     - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}
 
 deploy:
