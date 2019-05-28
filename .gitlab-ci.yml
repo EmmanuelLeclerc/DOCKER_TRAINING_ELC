@@ -1,6 +1,10 @@
+variables:
+  JFROG_REPO: adeo-docker-adeo-davidson-dev.jfrog.io
+
 stages:
   - build
   - test
+  - push_tuto
   - deploy
 
 build:
@@ -14,7 +18,15 @@ build:
 test:
   stage: test
   script:
-    - echo "test test"
+    - echo "${JFROG_USER}"
+    - echo "${JFROG_REPO}"
+
+push_tuto:
+  stage: push_tuto
+  script:
+    -        
+    - docker push ${JFROG_REPO}/tutoapi-elc:lastest
+
 
 deploy:
   stage: deploy
