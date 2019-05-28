@@ -11,7 +11,8 @@ stages:
   - test
   - push_tuto
   - deploy
-
+  - deployprod
+  
 build:
   stage: build
   image: node:alpine
@@ -51,5 +52,22 @@ push_tutoapi:
 deploy:
   stage: deploy
   script:
-    - echo "test deploy" 
+    - echo "test deploy"
+
+deployOnCIP:
+  only:
+    - develop
+  when : manual
+  stage: deploy
+  script:
+    - echo "Deploy my project on my continuous integration plateform"
+
+deployOnProd:
+  only:
+    - master
+  when : manual
+  stage: deployprod
+  script:
+    - echo "Deploy my project on production plateform"
+    
 
