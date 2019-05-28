@@ -35,8 +35,8 @@ push_tutobdd:
   script:
     - docker login -u ${JFROG_USER} -p ${JFROG_TOKEN} ${JFROG_REPO}
     - cd bdd && docker build -t ${DOCKER_IMAGE_TUTOBDD} .
-    - docker tag tutobdd-elc ${DOCKER_IMAGE_TUTOBDD}
-    - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOBDD}:lastest
+    - docker tag tutobdd-elc ${JFROG_REPO}/${DOCKER_IMAGE_TUTOBDD}
+    - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOBDD}
 
 push_tutoapi:
   stage: push_tutoapi
@@ -45,8 +45,8 @@ push_tutoapi:
   script:
     - docker login -u ${JFROG_USER} -p ${JFROG_TOKEN} ${JFROG_REPO}
     - cd bdd && docker build -t ${DOCKER_IMAGE_TUTOAPI} .
-    - docker tag tutobdd-elc ${DOCKER_IMAGE_TUTOAPI}
-    - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}:lastest
+    - docker tag tutobdd-elc ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}
+    - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}
 
 deploy:
   stage: deploy
