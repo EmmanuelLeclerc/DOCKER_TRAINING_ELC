@@ -24,6 +24,8 @@ test:
 
 push_tuto:
   stage: push_tuto
+  tags:
+    - docker
   script:
     - docker login -u ${JFROG_USER} -p ${JFROG_TOKEN} ${JFROG_REPO}
     - cd bdd && docker build -t ${DOCKER_IMAGE_TUTOBDD} .
