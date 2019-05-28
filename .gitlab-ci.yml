@@ -24,7 +24,6 @@ test:
 push_tuto:
   stage: push_tuto
   script:
-    -        
     - docker push ${JFROG_REPO}/tutoapi-elc:lastest
 
 
