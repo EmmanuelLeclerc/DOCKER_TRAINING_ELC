@@ -1,73 +1,69 @@
-variables:
-  JFROG_REPO: adeo-docker-adeo-davidson-dev.jfrog.io
-  DOCKER_IMAGE_TUTOBDD: tutobdd-elc
-  DOCKER_IMAGE_TUTOAPI: tutoapi-elc
-
-services:
-  - docker:dind
-
 stages:
   - build
   - test
-  - push_tuto
+  - jfrog
   - deploy
   - deployprod
-  
+
+variables:
+  JFROG_REPO: adeo-docker-adeo-davidson-dev.jfrog.io  # normally adeo-docker-[BU]-[Project]-dev.jfrog.io/tutoapi-davidson
+  DOCKER_IMAGE_NAME_TUTOAPI: tutoapi-elc
+  DOCKER_IMAGE_NAME_TUTOBDD: tutobdd-elc
+
+
+#### TEMPLATE
+.push-docker: &push-docker
+  stage: deploy
+  before_script:
+    - docker login -u ${JFROG_USER} -p ${JFROG_TOKEN} ${JFROG_REPO}
+  script:
+    - cd $FOLDER_TO_BUILD && docker build -t ${DOCKER_IMAGE_NAME} .
+    - docker tag ${DOCKER_IMAGE_NAME} ${JFROG_REPO}/${DOCKER_IMAGE_NAME}
+    - docker push ${JFROG_REPO}/${DOCKER_IMAGE_NAME}
+  # Select the Runners allowed to run this project using tags
+  tags:
+    - docker
+    - images
+
+
 build:
   stage: build
   image: node:alpine
-  tags:
-    - docker
-  script: 
+  script:
     - node --check tutoapi/app.js
-
-#test:
-#  stage: test
-#  script:
-#    - echo "${JFROG_USER}"
-#    - echo "${JFROG_REPO}"
-
-push_tutobdd:
-  stage: push_tuto
-  image: docker
   tags:
     - docker
+test:
+  stage: test
   script:
-    - docker login -u ${JFROG_USER} -p ${JFROG_TOKEN} ${JFROG_REPO}
-    - cd bdd && docker build -t ${DOCKER_IMAGE_TUTOBDD} .
-    - docker tag tutobdd-elc ${JFROG_REPO}/${DOCKER_IMAGE_TUTOBDD}
-    - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOBDD}
+    - echo "Testing my project"
 
-push_tutoapi:
-  stage: push_tuto
-  image: docker
-  tags:
-    - docker
-  script:
-    - docker login -u ${JFROG_USER} -p ${JFROG_TOKEN} ${JFROG_REPO}
-    - cd bdd && docker build -t ${DOCKER_IMAGE_TUTOAPI} .
-    - docker tag tutoapi-elc ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}
-    - docker push ${JFROG_REPO}/${DOCKER_IMAGE_TUTOAPI}
 
-deploy:
-  stage: deploy
-  script:
-    - echo "test deploy"
+deployBDDOnJFrog:
+  stage: jfrog
+  <<: *push-docker
+  variables:
+    DOCKER_IMAGE_NAME: ${DOCKER_IMAGE_NAME_TUTOBDD}
+    FOLDER_TO_BUILD: bdd
+
+deployAPIonJFrog:
+  stage: jfrog
+  <<: *push-docker
+  variables:
+    DOCKER_IMAGE_NAME: ${DOCKER_IMAGE_NAME_TUTOAPI}
+    FOLDER_TO_BUILD: tutoapi
 
 deployOnCIP:
   only:
     - develop
-  when : manual
   stage: deploy
   script:
     - echo "Deploy my project on my continuous integration plateform"
-
 deployOnProd:
-  only:
-    - master
+  only: 
+    - gitlabci
   when : manual
   stage: deployprod
   script:
     - echo "Deploy my project on production plateform"
-    
 

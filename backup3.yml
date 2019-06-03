@@ -1,0 +1,467 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+      volume.beta.kubernetes.io/storage-class: west1-d
+      volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/gce-pd
+    creationTimestamp: 2019-05-29T12:41:01Z
+    finalizers:
+    - kubernetes.io/pvc-protection
+    name: tutobdd
+    namespace: tuto-elc
+    resourceVersion: "94775310"
+    selfLink: /api/v1/namespaces/tuto-elc/persistentvolumeclaims/tutobdd
+    uid: 03d7e883-820f-11e9-9133-4201c0a80a03
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi
+    volumeName: pvc-03d7e883-820f-11e9-9133-4201c0a80a03
+  status:
+    accessModes:
+    - ReadWriteOnce
+    capacity:
+      storage: 2G
+    phase: Bound
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: 2019-05-29T12:16:13Z
+    labels:
+      app: opentutoapi
+    name: opentutoapi
+    namespace: tuto-elc
+    resourceVersion: "94690127"
+    selfLink: /api/v1/namespaces/tuto-elc/services/opentutoapi
+    uid: 8d34b959-820b-11e9-9133-4201c0a80a03
+  spec:
+    clusterIP: 172.30.184.106
+    ports:
+    - name: 3306-tcp
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+    - name: 33060-tcp
+      port: 33060
+      protocol: TCP
+      targetPort: 33060
+    selector:
+      app: opentutoapi
+      deploymentconfig: opentutoapi
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: 2019-05-29T12:16:13Z
+    labels:
+      app: opentutobdd
+    name: opentutobdd
+    namespace: tuto-elc
+    resourceVersion: "94690135"
+    selfLink: /api/v1/namespaces/tuto-elc/services/opentutobdd
+    uid: 8d3d467b-820b-11e9-9133-4201c0a80a03
+  spec:
+    clusterIP: 172.30.166.125
+    ports:
+    - name: 3306-tcp
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+    - name: 33060-tcp
+      port: 33060
+      protocol: TCP
+      targetPort: 33060
+    selector:
+      app: opentutobdd
+      deploymentconfig: opentutobdd
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: 2019-05-29T12:16:13Z
+    generation: 6
+    labels:
+      app: opentutoapi
+    name: opentutoapi
+    namespace: tuto-elc
+    resourceVersion: "94779704"
+    selfLink: /apis/apps.openshift.io/v1/namespaces/tuto-elc/deploymentconfigs/opentutoapi
+    uid: 8d4a3bfd-820b-11e9-9133-4201c0a80a03
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: opentutoapi
+      deploymentconfig: opentutoapi
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: opentutoapi
+          deploymentconfig: opentutoapi
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_HOST
+            value: opentutobdd
+          - name: MYSQL_USER
+            value: root
+          - name: MYSQL_PASSWORD
+            value: root
+          - name: MYSQL_DATABASE
+            value: workshop
+          - name: MYSQL_ROOT_PASSWORD
+            value: root
+          image: adeo-docker-adeo-davidson-dev.jfrog.io/tutoapi-elc@sha256:2ef0bef15578b36381ddbd677528574c9169969f3b808031346807f747fc4dd8
+          imagePullPolicy: Always
+          name: opentutoapi
+          ports:
+          - containerPort: 33060
+            protocol: TCP
+          - containerPort: 3306
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: opentutoapi-volume-1
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: opentutoapi-volume-1
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - opentutoapi
+        from:
+          kind: ImageStreamTag
+          name: opentutoapi:latest
+          namespace: tuto-elc
+        lastTriggeredImage: adeo-docker-adeo-davidson-dev.jfrog.io/tutoapi-elc@sha256:2ef0bef15578b36381ddbd677528574c9169969f3b808031346807f747fc4dd8
+      type: ImageChange
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: 2019-05-29T12:42:10Z
+      lastUpdateTime: 2019-05-29T12:42:13Z
+      message: replication controller "opentutoapi-5" successfully rolled out
+      reason: NewReplicationControllerAvailable
+      status: "True"
+      type: Progressing
+    - lastTransitionTime: 2019-05-29T12:42:22Z
+      lastUpdateTime: 2019-05-29T12:42:22Z
+      message: Deployment config has minimum availability.
+      status: "True"
+      type: Available
+    details:
+      causes:
+      - type: Manual
+      message: manual change
+    latestVersion: 5
+    observedGeneration: 6
+    readyReplicas: 1
+    replicas: 1
+    unavailableReplicas: 0
+    updatedReplicas: 1
+- apiVersion: apps.openshift.io/v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    creationTimestamp: 2019-05-29T12:16:13Z
+    generation: 6
+    labels:
+      app: opentutobdd
+    name: opentutobdd
+    namespace: tuto-elc
+    resourceVersion: "94788224"
+    selfLink: /apis/apps.openshift.io/v1/namespaces/tuto-elc/deploymentconfigs/opentutobdd
+    uid: 8d4f7e5a-820b-11e9-9133-4201c0a80a03
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: opentutobdd
+      deploymentconfig: opentutobdd
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          app: opentutobdd
+          deploymentconfig: opentutobdd
+      spec:
+        containers:
+        - env:
+          - name: MYSQL_HOST
+            value: opentutobdd
+          - name: MYSQL_USER
+            value: root
+          - name: MYSQL_PASSWORD
+            value: root
+          - name: MYSQL_DATABASE
+            value: workshop
+          - name: MYSQL_ROOT_PASSWORD
+            value: root
+          image: adeo-docker-adeo-davidson-dev.jfrog.io/tutobdd-elc@sha256:5d640321cee1e14604c54a8ccc8c9c697270b6c4be6c5d398bc920b81088ba8c
+          imagePullPolicy: Always
+          name: opentutobdd
+          ports:
+          - containerPort: 3306
+            protocol: TCP
+          - containerPort: 33060
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: opentutobdd-volume-1
+          - mountPath: /mysql
+            name: tutobdd
+          - mountPath: C:/Program Files/Git/var/lib/mysql
+            name: tutobdd
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: opentutobdd-volume-1
+        - name: tutobdd
+          persistentVolumeClaim:
+            claimName: tutobdd
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - opentutobdd
+        from:
+          kind: ImageStreamTag
+          name: opentutobdd:latest
+          namespace: tuto-elc
+        lastTriggeredImage: adeo-docker-adeo-davidson-dev.jfrog.io/tutobdd-elc@sha256:5d640321cee1e14604c54a8ccc8c9c697270b6c4be6c5d398bc920b81088ba8c
+      type: ImageChange
+  status:
+    availableReplicas: 0
+    conditions:
+    - lastTransitionTime: 2019-05-29T12:16:13Z
+      lastUpdateTime: 2019-05-29T12:16:13Z
+      message: Deployment config does not have minimum availability.
+      status: "False"
+      type: Available
+    - lastTransitionTime: 2019-05-29T12:44:49Z
+      lastUpdateTime: 2019-05-29T12:44:49Z
+      message: replication controller "opentutobdd-5" is progressing
+      reason: ReplicationControllerUpdated
+      status: "True"
+      type: Progressing
+    details:
+      causes:
+      - type: Manual
+      message: manual change
+    latestVersion: 5
+    observedGeneration: 6
+    replicas: 1
+    unavailableReplicas: 1
+    updatedReplicas: 1
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    creationTimestamp: 2019-05-29T12:16:13Z
+    labels:
+      app: opentutoapi
+    name: opentutoapi
+    namespace: tuto-elc
+    resourceVersion: "94690148"
+    selfLink: /apis/route.openshift.io/v1/namespaces/tuto-elc/routes/opentutoapi
+    uid: 8d53c152-820b-11e9-9133-4201c0a80a03
+  spec:
+    host: opentutoapi-tuto-elc.euw1-gcp-poc.adeo.cloud
+    port:
+      targetPort: 3000
+    to:
+      kind: Service
+      name: opentutoapi
+      weight: 100
+    wildcardPolicy: None
+  status:
+    ingress:
+    - conditions:
+      - lastTransitionTime: 2019-05-29T12:16:13Z
+        status: "True"
+        type: Admitted
+      host: opentutoapi-tuto-elc.euw1-gcp-poc.adeo.cloud
+      routerName: router
+      wildcardPolicy: None
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/image.dockerRepositoryCheck: 2019-05-29T12:16:15Z
+    creationTimestamp: 2019-05-29T12:16:13Z
+    generation: 2
+    labels:
+      app: opentutoapi
+    name: node
+    namespace: tuto-elc
+    resourceVersion: "94690276"
+    selfLink: /apis/image.openshift.io/v1/namespaces/tuto-elc/imagestreams/node
+    uid: 8d5ab368-820b-11e9-9133-4201c0a80a03
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: node:8-alpine
+      from:
+        kind: DockerImage
+        name: node:8-alpine
+      generation: 2
+      importPolicy: {}
+      name: 8-alpine
+      referencePolicy:
+        type: Source
+  status:
+    dockerImageRepository: docker-registry.default.svc:5000/tuto-elc/node
+    tags:
+    - items:
+      - created: 2019-05-29T12:16:15Z
+        dockerImageReference: node@sha256:c266cd4e79cf27452d27c965453da8044f9e1a4071015c00aa779370cdfe32d2
+        generation: 2
+        image: sha256:c266cd4e79cf27452d27c965453da8044f9e1a4071015c00aa779370cdfe32d2
+      tag: 8-alpine
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/image.dockerRepositoryCheck: 2019-05-29T12:16:14Z
+    creationTimestamp: 2019-05-29T12:16:14Z
+    generation: 2
+    labels:
+      app: opentutoapi
+    name: opentutoapi
+    namespace: tuto-elc
+    resourceVersion: "94690173"
+    selfLink: /apis/image.openshift.io/v1/namespaces/tuto-elc/imagestreams/opentutoapi
+    uid: 8d6d385c-820b-11e9-9133-4201c0a80a03
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: null
+      from:
+        kind: DockerImage
+        name: adeo-docker-adeo-davidson-dev.jfrog.io/tutoapi-elc
+      generation: 2
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+  status:
+    dockerImageRepository: docker-registry.default.svc:5000/tuto-elc/opentutoapi
+    tags:
+    - items:
+      - created: 2019-05-29T12:16:14Z
+        dockerImageReference: adeo-docker-adeo-davidson-dev.jfrog.io/tutoapi-elc@sha256:2ef0bef15578b36381ddbd677528574c9169969f3b808031346807f747fc4dd8
+        generation: 2
+        image: sha256:2ef0bef15578b36381ddbd677528574c9169969f3b808031346807f747fc4dd8
+      tag: latest
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/image.dockerRepositoryCheck: 2019-05-29T12:16:14Z
+    creationTimestamp: 2019-05-29T12:16:14Z
+    generation: 2
+    labels:
+      app: opentutobdd
+    name: opentutobdd
+    namespace: tuto-elc
+    resourceVersion: "94690186"
+    selfLink: /apis/image.openshift.io/v1/namespaces/tuto-elc/imagestreams/opentutobdd
+    uid: 8d7377ba-820b-11e9-9133-4201c0a80a03
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: adeo-docker-adeo-davidson-dev.jfrog.io/tutobdd-elc
+      from:
+        kind: DockerImage
+        name: adeo-docker-adeo-davidson-dev.jfrog.io/tutobdd-elc
+      generation: 2
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+  status:
+    dockerImageRepository: docker-registry.default.svc:5000/tuto-elc/opentutobdd
+    tags:
+    - items:
+      - created: 2019-05-29T12:16:14Z
+        dockerImageReference: adeo-docker-adeo-davidson-dev.jfrog.io/tutobdd-elc@sha256:5d640321cee1e14604c54a8ccc8c9c697270b6c4be6c5d398bc920b81088ba8c
+        generation: 2
+        image: sha256:5d640321cee1e14604c54a8ccc8c9c697270b6c4be6c5d398bc920b81088ba8c
+      tag: latest
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
